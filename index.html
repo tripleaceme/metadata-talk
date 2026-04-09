@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Metadata: The Missing Layer in Your Stack — Ayoade Adegbite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#080b14;
+  --bg2:#0c1021;
+  --surface:#131829;
+  --surface2:#1a2035;
+  --border:rgba(255,255,255,.06);
+  --text:#e8ecf4;
+  --muted:#6b7a99;
+  --dim:#3d4a66;
+  --cyan:#22d3ee;
+  --cyan-dim:rgba(34,211,238,.08);
+  --cyan-glow:rgba(34,211,238,.25);
+  --amber:#f59e0b;
+  --amber-dim:rgba(245,158,11,.08);
+  --amber-glow:rgba(245,158,11,.3);
+  --rose:#f43f5e;
+  --rose-dim:rgba(244,63,94,.08);
+  --green:#10b981;
+  --green-dim:rgba(16,185,129,.08);
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:var(--font-body);
+  background:var(--bg);color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Presentation Shell ── */
+.deck{position:relative;width:100%;height:100%;overflow:hidden}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:5vh 8vw;
+  opacity:0;transform:translateX(60px);
+  transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+  overflow:hidden;
+}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:auto}
+.slide.prev{opacity:0;transform:translateX(-60px)}
+
+/* ── Background Pattern ── */
+.slide::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 30%,rgba(34,211,238,.03),transparent),
+    radial-gradient(ellipse 60% 50% at 20% 80%,rgba(245,158,11,.02),transparent);
+  pointer-events:none;z-index:0;
+}
+
+.slide>*{position:relative;z-index:1}
+
+/* ── Lineage Grid ── */
+.lineage-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── Typography ── */
+.display{
+  font-family:var(--font-display);
+  font-weight:900;line-height:1.08;
+  letter-spacing:-.02em;
+}
+.display--xl{font-size:clamp(2.8rem,5.5vw,5rem)}
+.display--lg{font-size:clamp(2.2rem,4vw,3.6rem)}
+.display--md{font-size:clamp(1.6rem,3vw,2.6rem)}
+
+.mono{font-family:var(--font-mono);font-weight:400}
+.mono--sm{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase}
+.mono--md{font-size:.9rem}
+.mono--lg{font-size:1.1rem}
+
+.body{font-family:var(--font-body);font-weight:400;line-height:1.65}
+.body--lg{font-size:clamp(1.1rem,1.8vw,1.35rem)}
+.body--md{font-size:clamp(.95rem,1.4vw,1.15rem)}
+
+.text-cyan{color:var(--cyan)}
+.text-amber{color:var(--amber)}
+.text-rose{color:var(--rose)}
+.text-green{color:var(--green)}
+.text-muted{color:var(--muted)}
+.text-dim{color:var(--dim)}
+
+/* ── Accent Line ── */
+.accent-line{
+  width:80px;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--amber));
+  margin:1.2rem 0;
+}
+
+/* ── Tag / Label ── */
+.tag{
+  display:inline-block;
+  font-family:var(--font-mono);font-size:.7rem;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;
+  padding:.35em .9em;border-radius:4px;
+  border:1px solid var(--border);
+  background:var(--surface);
+}
+.tag--cyan{border-color:rgba(34,211,238,.2);background:var(--cyan-dim);color:var(--cyan)}
+.tag--amber{border-color:rgba(245,158,11,.2);background:var(--amber-dim);color:var(--amber)}
+.tag--rose{border-color:rgba(244,63,94,.2);background:var(--rose-dim);color:var(--rose)}
+.tag--green{border-color:rgba(16,185,129,.2);background:var(--green-dim);color:var(--green)}
+
+/* ── Bullet Lists ── */
+.points{list-style:none;display:flex;flex-direction:column;gap:.85rem}
+.points li{
+  display:flex;align-items:flex-start;gap:.75rem;
+  font-size:clamp(.95rem,1.5vw,1.2rem);line-height:1.55;
+  color:var(--muted);
+}
+.points li .bullet{
+  flex-shrink:0;width:6px;height:6px;border-radius:50%;
+  margin-top:.55em;
+  background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan-glow);
+}
+.points li strong{color:var(--text);font-weight:600}
+
+.points--amber li .bullet{background:var(--amber);box-shadow:0 0 8px var(--amber-glow)}
+.points--rose li .bullet{background:var(--rose);box-shadow:0 0 8px rgba(244,63,94,.3)}
+.points--green li .bullet{background:var(--green);box-shadow:0 0 8px rgba(16,185,129,.3)}
+
+/* ── Callout ── */
+.callout{
+  display:flex;align-items:flex-start;gap:1rem;
+  padding:1.2rem 1.6rem;border-radius:8px;
+  border-left:3px solid var(--cyan);
+  background:var(--cyan-dim);
+  margin-top:1.5rem;
+}
+.callout--amber{border-left-color:var(--amber);background:var(--amber-dim)}
+.callout--rose{border-left-color:var(--rose);background:var(--rose-dim)}
+.callout--green{border-left-color:var(--green);background:var(--green-dim)}
+.callout .icon{font-size:1.3rem;flex-shrink:0;margin-top:.1rem}
+.callout .text{font-size:clamp(.9rem,1.3vw,1.1rem);line-height:1.6;color:var(--text)}
+
+/* ── Layers Stack ── */
+.layers{display:flex;flex-direction:column;gap:.6rem;margin:1.5rem 0}
+.layer{
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 1.4rem;border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  font-size:clamp(.85rem,1.3vw,1.05rem);
+  transition:transform .3s,border-color .3s;
+}
+.layer:hover{transform:translateX(6px)}
+.layer .num{
+  font-family:var(--font-mono);font-weight:700;font-size:.8rem;
+  width:28px;height:28px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface2);
+}
+.layer--missing{
+  border:1px dashed var(--amber);
+  background:var(--amber-dim);
+  animation:pulse-border 2.5s ease-in-out infinite;
+}
+.layer--missing .num{background:rgba(245,158,11,.15);color:var(--amber)}
+
+@keyframes pulse-border{
+  0%,100%{border-color:rgba(245,158,11,.3)}
+  50%{border-color:rgba(245,158,11,.7)}
+}
+
+/* ── Two-column ── */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media(max-width:900px){.split{grid-template-columns:1fr;gap:1.5rem}}
+
+/* ── Code Block ── */
+.code-block{
+  font-family:var(--font-mono);font-size:.8rem;line-height:1.7;
+  padding:1.4rem 1.6rem;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  overflow-x:auto;white-space:pre;
+  color:var(--muted);
+}
+.code-block .kw{color:var(--cyan)}
+.code-block .str{color:var(--green)}
+.code-block .cmt{color:var(--dim);font-style:italic}
+
+/* ── Screenshot Placeholder ── */
+.screenshot-frame{
+  border:1px solid var(--border);border-radius:10px;
+  background:var(--surface);
+  padding:2rem;
+  min-height:220px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1rem;
+  position:relative;overflow:hidden;
+}
+.screenshot-frame::before{
+  content:'';position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(34,211,238,.02) 20px,rgba(34,211,238,.02) 21px);
+  pointer-events:none;
+}
+.screenshot-frame .label{
+  font-family:var(--font-mono);font-size:.75rem;color:var(--dim);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+
+/* ── Lineage Flow Diagram ── */
+.flow-diagram{
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  flex-wrap:wrap;margin:1.5rem 0;
+}
+.flow-node{
+  padding:.6rem 1.2rem;border-radius:6px;
+  font-family:var(--font-mono);font-size:.75rem;font-weight:500;
+  border:1px solid var(--border);background:var(--surface);
+  white-space:nowrap;
+}
+.flow-node--src{border-color:rgba(34,211,238,.3);color:var(--cyan)}
+.flow-node--stg{border-color:rgba(16,185,129,.3);color:var(--green)}
+.flow-node--mart{border-color:rgba(245,158,11,.3);color:var(--amber)}
+.flow-arrow{color:var(--dim);font-size:1.2rem}
+
+/* ── Progress Bar ── */
+.progress{
+  position:fixed;top:0;left:0;height:2px;z-index:100;
+  background:linear-gradient(90deg,var(--cyan),var(--amber));
+  transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Slide Counter ── */
+.counter{
+  position:fixed;bottom:2rem;right:3rem;z-index:100;
+  font-family:var(--font-mono);font-size:.75rem;
+  color:var(--dim);letter-spacing:.06em;
+}
+.counter .current{color:var(--text);font-weight:600}
+
+/* ── Speaker Name Tag ── */
+.speaker-tag{
+  position:fixed;bottom:2rem;left:3rem;z-index:100;
+  font-family:var(--font-mono);font-size:.65rem;
+  color:var(--dim);letter-spacing:.08em;text-transform:uppercase;
+}
+
+/* ── Navigation Hints ── */
+.nav-hint{
+  position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:100;
+  font-family:var(--font-mono);font-size:.65rem;color:var(--dim);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+  letter-spacing:.04em;
+}
+.nav-hint.show{opacity:1}
+
+/* ── Stagger Animations ── */
+.slide.active .stagger{
+  animation:fadeUp .5s cubic-bezier(.4,0,.2,1) both;
+}
+.slide.active .stagger:nth-child(1){animation-delay:.05s}
+.slide.active .stagger:nth-child(2){animation-delay:.12s}
+.slide.active .stagger:nth-child(3){animation-delay:.19s}
+.slide.active .stagger:nth-child(4){animation-delay:.26s}
+.slide.active .stagger:nth-child(5){animation-delay:.33s}
+.slide.active .stagger:nth-child(6){animation-delay:.4s}
+.slide.active .stagger:nth-child(7){animation-delay:.47s}
+.slide.active .stagger:nth-child(8){animation-delay:.54s}
+.slide.active .stagger:nth-child(9){animation-delay:.61s}
+.slide.active .stagger:nth-child(10){animation-delay:.68s}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* ── Typing cursor ── */
+.cursor::after{
+  content:'_';
+  animation:blink 1s step-end infinite;
+  color:var(--cyan);
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ── Big Number ── */
+.big-num{
+  font-family:var(--font-display);font-weight:900;
+  font-size:clamp(4rem,8vw,7rem);line-height:1;
+  background:linear-gradient(135deg,var(--cyan),var(--amber));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ── Quad Grid ── */
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0}
+.quad-item{
+  padding:1.2rem 1.4rem;border-radius:8px;
+  border:1px solid var(--border);background:var(--surface);
+}
+.quad-item .qi-icon{font-size:1.4rem;margin-bottom:.5rem}
+.quad-item .qi-title{
+  font-family:var(--font-mono);font-size:.75rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:.4rem;
+}
+.quad-item .qi-desc{font-size:.85rem;color:var(--muted);line-height:1.5}
+
+/* ── Fullscreen button ── */
+.fs-btn{
+  position:fixed;top:1.5rem;right:1.5rem;z-index:100;
+  width:32px;height:32px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;transition:all .2s;
+  opacity:.4;
+}
+.fs-btn:hover{opacity:1;border-color:var(--cyan);color:var(--cyan)}
+
+/* ── Title Slide Specific ── */
+.title-slide{justify-content:center;align-items:center;text-align:center}
+.title-slide .display{
+  background:linear-gradient(135deg,var(--text) 40%,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+/* ── Thank You Slide ── */
+.thankyou{justify-content:center;align-items:center;text-align:center}
+
+/* ── Overlap badge ── */
+.badge-float{
+  position:absolute;top:3rem;right:4rem;
+  padding:.5rem 1rem;border-radius:20px;
+  font-family:var(--font-mono);font-size:.65rem;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid rgba(34,211,238,.2);
+  background:var(--cyan-dim);color:var(--cyan);
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="counter"><span class="current" id="cCurrent">01</span> <span class="text-dim">/</span> <span id="cTotal">24</span></div>
+<div class="speaker-tag">Ayoade Adegbite</div>
+<div class="nav-hint" id="navHint">← → &nbsp;or&nbsp; space to navigate</div>
+<button class="fs-btn" id="fsBtn" title="Fullscreen">⛶</button>
+
+<div class="deck" id="deck">
+
+<!-- ═══════════════════ SLIDE 1 — TITLE ═══════════════════ -->
+<section class="slide title-slide" data-slide="1">
+  <div class="lineage-grid"></div>
+  <span class="tag tag--cyan stagger" style="margin-bottom:1.5rem">Data Engineering Community Event</span>
+  <h1 class="display display--xl stagger">Metadata: The Missing<br/>Layer in Your Stack</h1>
+  <div class="accent-line stagger" style="margin:1.5rem auto"></div>
+  <p class="body body--lg text-muted stagger">Explore the role of metadata as the foundation<br/>for data trust and discoverability</p>
+  <p class="mono mono--sm text-dim stagger" style="margin-top:2rem">Ayoade Adegbite</p>
+</section>
+
+<!-- ═══════════════════ SLIDE 2 — ABOUT THE SPEAKER ═══════════════════ -->
+<section class="slide" data-slide="2">
+  <div class="lineage-grid"></div>
+  <span class="tag tag--cyan stagger">About the Speaker</span>
+  <h2 class="display display--md stagger" style="margin-top:1rem">Ayoade Adegbite</h2>
+  <div class="accent-line stagger"></div>
+  <p class="body body--lg stagger" style="margin-bottom:1.5rem;max-width:700px">Senior Analytics Engineer, international speaker, open-source contributor, and founder of <strong class="text-amber">Behind The Data</strong>.</p>
+  <div class="split stagger">
+    <div>
+      <p class="mono mono--sm text-cyan" style="margin-bottom:.8rem">What I Do</p>
+      <ul class="points" style="gap:.6rem">
+        <li><span class="bullet"></span>Build <strong>data foundations</strong> that make analytics trustworthy</li>
+        <li><span class="bullet"></span>Automate <strong>documentation</strong> &amp; improve data quality at scale</li>
+        <li><span class="bullet"></span><strong>8+ conference talks</strong> across 6+ countries</li>
+        <li><span class="bullet"></span><strong>900+ students</strong> trained in analytics engineering</li>
+      </ul>
+    </div>
+    <div>
+      <p class="mono mono--sm text-amber" style="margin-bottom:.8rem">Stack &amp; Focus</p>
+      <ul class="points points--amber" style="gap:.6rem">
+        <li><span class="bullet"></span><strong>dbt</strong> &middot; Snowflake &middot; BigQuery &middot; Airflow</li>
+        <li><span class="bullet"></span>Analytics Engineering &amp; Data Modeling</li>
+        <li><span class="bullet"></span>Documentation Automation with LLMs</li>
+        <li><span class="bullet"></span>dbt Lagos Community Organizer</li>
+      </ul>
+    </div>
+  </div>
+  <div style="display:flex;gap:1rem;margin-top:1.8rem;flex-wrap:wrap" class="stagger">
+    <span class="tag">linkedin.com/in/tripleaceme</span>
+    <span class="tag">github.com/tripleaceme</span>
+    <span class="tag" style="border-color:rgba(34,211,238,.2);color:var(--cyan)">@abel_analytics</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 3 — BEHIND THE DATA NEWSLETTER ═══════════════════ -->
+<section class="slide" data-slide="3" style="justify-content:center">
+  <div class="lineage-grid"></div>
+  <span class="tag tag--amber stagger">Newsletter</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Behind The Data</h2>
+  <div class="accent-line stagger"></div>
+  <p class="body body--lg text-muted stagger" style="max-width:650px">Insightful stories and in-depth conversations with professionals across the data industry &mdash; their journeys, expertise, and the impact of their work.</p>
+  <div class="quad stagger" style="margin-top:1.5rem;max-width:700px">
+    <div class="quad-item" style="border-color:rgba(245,158,11,.15)">
+      <div class="qi-icon">&#128220;</div>
+      <div class="qi-title text-amber">39+ Editions</div>
+      <div class="qi-desc">Weekly deep-dives into data careers and engineering</div>
+    </div>
+    <div class="quad-item" style="border-color:rgba(245,158,11,.15)">
+      <div class="qi-icon">&#127897;</div>
+      <div class="qi-title text-amber">Podcast</div>
+      <div class="qi-desc">Conversations with data professionals worldwide</div>
+    </div>
+    <div class="quad-item" style="border-color:rgba(34,211,238,.15)">
+      <div class="qi-icon">&#127891;</div>
+      <div class="qi-title text-cyan">Academy</div>
+      <div class="qi-desc">Hands-on analytics engineering training</div>
+    </div>
+    <div class="quad-item" style="border-color:rgba(16,185,129,.15)">
+      <div class="qi-icon">&#127760;</div>
+      <div class="qi-title text-green">Community</div>
+      <div class="qi-desc">Growing network of data practitioners across Africa &amp; beyond</div>
+    </div>
+  </div>
+  <div class="callout callout--amber stagger" style="margin-top:1.5rem;max-width:700px">
+    <span class="icon">&#10148;</span>
+    <span class="text">Subscribe at <strong>behindthedata.substack.com</strong></span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 4 — OPENING HOOK ═══════════════════ -->
+<section class="slide" data-slide="4">
+  <div class="lineage-grid"></div>
+  <span class="tag tag--green stagger">Opening</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Your data stack is working<span class="cursor"></span></h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points points--green stagger">
+    <li><span class="bullet"></span>Pipelines are running</li>
+    <li><span class="bullet"></span>Tables are populated</li>
+    <li><span class="bullet"></span>Dashboards are live</li>
+  </ul>
+  <div class="callout callout--amber stagger" style="margin-top:2rem">
+    <span class="icon">&#9888;</span>
+    <span class="text"><strong>But...</strong> Nobody fully understands the data</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 3 — RELATABLE PROBLEM ═══════════════════ -->
+<section class="slide" data-slide="3">
+  <span class="tag tag--rose stagger">The Problem</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">You've seen this before...</h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points points--rose stagger">
+    <li><span class="bullet"></span>A table with <strong>no description</strong></li>
+    <li><span class="bullet"></span>Columns like <code class="mono" style="color:var(--rose)">value_flag</code>, <code class="mono" style="color:var(--rose)">col_1</code></li>
+    <li><span class="bullet"></span>You ask someone &rarr; <em>"I think it means..."</em></li>
+  </ul>
+  <div class="callout callout--rose stagger" style="margin-top:2rem">
+    <span class="icon">&#10148;</span>
+    <span class="text">This is <strong>not</strong> a data problem. This is a <strong>metadata</strong> problem.</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 4 — CORE IDEA ═══════════════════ -->
+<section class="slide" data-slide="4" style="justify-content:center;align-items:center;text-align:center">
+  <div class="lineage-grid"></div>
+  <p class="mono mono--sm text-dim stagger" style="letter-spacing:.12em;margin-bottom:1.5rem">The Core Idea</p>
+  <h2 class="display display--xl stagger" style="max-width:800px">Pipelines move data.</h2>
+  <h2 class="display display--xl stagger" style="max-width:800px;margin-top:.5rem">
+    <span style="background:linear-gradient(135deg,var(--cyan),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Metadata</span> makes it usable.
+  </h2>
+</section>
+
+<!-- ═══════════════════ SLIDE 5 — THE MISSING LAYER ═══════════════════ -->
+<section class="slide" data-slide="5">
+  <span class="tag tag--amber stagger">Architecture</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Your Data Stack Has 3 Layers</h2>
+  <div class="accent-line stagger"></div>
+  <div class="layers stagger">
+    <div class="layer">
+      <span class="num">1</span>
+      <span><strong>Infrastructure</strong> &mdash; warehouses, pipelines, orchestration</span>
+    </div>
+    <div class="layer">
+      <span class="num">2</span>
+      <span><strong>Transformation</strong> &mdash; models, dbt, SQL</span>
+    </div>
+    <div class="layer layer--missing">
+      <span class="num">3</span>
+      <span><strong>Metadata</strong> &mdash; the missing layer</span>
+    </div>
+  </div>
+  <div class="callout callout--amber stagger">
+    <span class="icon">&#10148;</span>
+    <span class="text">Most teams only optimize the first two</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 6 — WHAT IS METADATA ═══════════════════ -->
+<section class="slide" data-slide="6">
+  <span class="tag tag--cyan stagger">Definition</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">What is Metadata?</h2>
+  <div class="accent-line stagger"></div>
+  <p class="body body--lg text-muted stagger" style="margin-bottom:1.5rem">Metadata is not just "extra info" &mdash; it includes:</p>
+  <div class="quad stagger">
+    <div class="quad-item">
+      <div class="qi-icon">&#128196;</div>
+      <div class="qi-title text-cyan">Documentation</div>
+      <div class="qi-desc">What does this mean?</div>
+    </div>
+    <div class="quad-item">
+      <div class="qi-icon">&#128280;</div>
+      <div class="qi-title text-green">Lineage</div>
+      <div class="qi-desc">Where did it come from?</div>
+    </div>
+    <div class="quad-item">
+      <div class="qi-icon">&#128100;</div>
+      <div class="qi-title text-amber">Ownership</div>
+      <div class="qi-desc">Who is responsible?</div>
+    </div>
+    <div class="quad-item">
+      <div class="qi-icon">&#128200;</div>
+      <div class="qi-title text-rose">Usage</div>
+      <div class="qi-desc">Who depends on it?</div>
+    </div>
+  </div>
+  <div class="callout stagger">
+    <span class="icon">&#9733;</span>
+    <span class="text"><strong>Metadata = Context.</strong> It is the interface between humans and data.</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 7 — WHY IT MATTERS ═══════════════════ -->
+<section class="slide" data-slide="7">
+  <span class="tag tag--rose stagger">Impact</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Why It Matters</h2>
+  <div class="accent-line stagger"></div>
+  <p class="body body--lg text-muted stagger" style="margin-bottom:1rem">Without metadata:</p>
+  <ul class="points points--rose stagger">
+    <li><span class="bullet"></span>Data is <strong>hard to trust</strong></li>
+    <li><span class="bullet"></span>Data is <strong>hard to find</strong></li>
+    <li><span class="bullet"></span>Data is <strong>hard to debug</strong></li>
+  </ul>
+  <div class="callout callout--rose stagger" style="margin-top:2rem">
+    <span class="icon">&#10148;</span>
+    <span class="text">Data exists, but it's <strong>not usable</strong></span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 8 — WHERE THINGS BREAK ═══════════════════ -->
+<section class="slide" data-slide="8">
+  <span class="tag tag--amber stagger">Breakdown</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Where Things Break</h2>
+  <div class="accent-line stagger"></div>
+  <div class="layers stagger">
+    <div class="layer" style="border-color:rgba(244,63,94,.2)">
+      <span class="num" style="color:var(--rose)">&#10005;</span>
+      <span><strong>Documentation</strong> breaks &mdash; outdated, inconsistent</span>
+    </div>
+    <div class="layer" style="border-color:rgba(244,63,94,.2)">
+      <span class="num" style="color:var(--rose)">&#10005;</span>
+      <span><strong>Lineage</strong> is incomplete &mdash; no column-level visibility</span>
+    </div>
+    <div class="layer" style="border-color:rgba(244,63,94,.2)">
+      <span class="num" style="color:var(--rose)">&#10005;</span>
+      <span><strong>Discovery</strong> is difficult &mdash; tribal knowledge</span>
+    </div>
+    <div class="layer" style="border-color:rgba(244,63,94,.2)">
+      <span class="num" style="color:var(--rose)">&#10005;</span>
+      <span><strong>Usage</strong> is invisible &mdash; no feedback loop</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 9 — DOCUMENTATION PROBLEMS ═══════════════════ -->
+<section class="slide" data-slide="9">
+  <span class="tag tag--rose stagger">Problem #1</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Documentation is Broken</h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points points--rose stagger">
+    <li><span class="bullet"></span><strong>No tracking</strong> &rarr; becomes outdated the moment it's written</li>
+    <li><span class="bullet"></span><strong>Rewritten everywhere</strong> &rarr; inconsistent across models</li>
+    <li><span class="bullet"></span><strong>Nobody trusts it</strong> &rarr; so nobody reads it</li>
+  </ul>
+  <div class="callout callout--rose stagger" style="margin-top:2rem">
+    <span class="icon">&#128269;</span>
+    <span class="text">Documentation without tracking is just hopeful notes</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 10 — GOOD DOCUMENTATION ═══════════════════ -->
+<section class="slide" data-slide="10">
+  <span class="tag tag--green stagger">Solution Path</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">What Good Documentation Looks Like</h2>
+  <div class="accent-line stagger"></div>
+  <p class="body body--lg text-muted stagger" style="margin-bottom:1.5rem">Documentation should be a <strong>system</strong>, not a chore:</p>
+  <ul class="points points--green stagger">
+    <li><span class="bullet"></span><strong>Track changes</strong> over time &mdash; know when definitions drift</li>
+    <li><span class="bullet"></span><strong>Stay consistent</strong> across models &mdash; single source of truth</li>
+    <li><span class="bullet"></span><strong>Be reusable</strong>, not duplicated &mdash; write once, inherit everywhere</li>
+  </ul>
+  <div class="callout callout--green stagger" style="margin-top:2rem">
+    <span class="icon">&#10148;</span>
+    <span class="text">Not just static text &mdash; a living, tracked documentation layer</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 11 — LINEAGE PROBLEMS ═══════════════════ -->
+<section class="slide" data-slide="11">
+  <span class="tag tag--rose stagger">Problem #2</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Lineage Is Often Not Enough</h2>
+  <div class="accent-line stagger"></div>
+  <div class="flow-diagram stagger">
+    <div class="flow-node flow-node--src">src_orders</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-node flow-node--stg">stg_orders</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-node flow-node--mart">fct_revenue</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-node" style="border-color:var(--dim);color:var(--dim)">??? columns</div>
+  </div>
+  <ul class="points points--rose stagger" style="margin-top:1.5rem">
+    <li><span class="bullet"></span><strong>Table-level only</strong> &mdash; you see connections but not transformations</li>
+    <li><span class="bullet"></span><strong>No column-level visibility</strong> &mdash; where did <code class="mono" style="color:var(--rose)">revenue</code> come from?</li>
+    <li><span class="bullet"></span><strong>Hard to debug impact</strong> &mdash; what breaks if I change this?</li>
+  </ul>
+</section>
+
+<!-- ═══════════════════ SLIDE 12 — DEMO / DBT FLOW LINEAGE ═══════════════════ -->
+<section class="slide" data-slide="12">
+  <div class="badge-float stagger">Live Demo</div>
+  <span class="tag tag--cyan stagger">dbt Flow Lineage</span>
+  <h2 class="display display--md stagger" style="margin-top:1rem">What Changes When You Can <em>Actually</em> See Lineage?</h2>
+  <div class="accent-line stagger"></div>
+  <div class="screenshot-frame stagger" style="margin:1.5rem 0">
+    <span class="label">&#9654; dbt Flow Lineage — Column-Level Lineage View</span>
+    <img src="demo-obt-lineage.jpeg" alt="dbt Flow Lineage — Column-Level View" style="width:100%;max-height:300px;object-fit:contain;border-radius:6px"/>
+  </div>
+  <div class="split stagger">
+    <div>
+      <p class="mono mono--sm text-cyan" style="margin-bottom:.5rem">Talk Track</p>
+      <ul class="points" style="gap:.5rem">
+        <li><span class="bullet"></span>Show <strong>column flow</strong> across models</li>
+        <li><span class="bullet"></span>Show <strong>dependency chains</strong> at granular level</li>
+        <li><span class="bullet"></span>Show <strong>impact analysis</strong> before changes</li>
+      </ul>
+    </div>
+    <div>
+      <p class="mono mono--sm text-amber" style="margin-bottom:.5rem">Why This Matters</p>
+      <ul class="points points--amber" style="gap:.5rem">
+        <li><span class="bullet"></span>Debug <strong>faster</strong> &mdash; trace issues to source</li>
+        <li><span class="bullet"></span>Change <strong>safely</strong> &mdash; know what breaks</li>
+        <li><span class="bullet"></span>Onboard <strong>quickly</strong> &mdash; see the full picture</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 13 — DBT FLOW LINEAGE VIDEO ═══════════════════ -->
+<section class="slide" data-slide="13" style="justify-content:center;align-items:center;text-align:center">
+  <div class="lineage-grid"></div>
+  <div class="badge-float stagger">Video Demo</div>
+  <span class="tag tag--cyan stagger">dbt Flow Lineage in Action</span>
+  <h2 class="display display--md stagger" style="margin-top:1rem;margin-bottom:1.5rem">See Column-Level Lineage Live</h2>
+  <div class="screenshot-frame stagger" style="margin:0 auto;max-width:860px;width:100%;padding:1rem">
+    <video src="dbt-flow-lineagepreview.mp4" autoplay loop muted playsinline style="width:100%;max-height:420px;object-fit:contain;border-radius:6px"></video>
+  </div>
+  <p class="mono mono--sm text-dim stagger" style="margin-top:1.2rem">Trace any column from source to dashboard &mdash; understand impact before you ship</p>
+</section>
+
+<!-- ═══════════════════ SLIDE 14 — DISCOVERY PROBLEMS ═══════════════════ -->
+<section class="slide" data-slide="13">
+  <span class="tag tag--rose stagger">Problem #3</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Finding Data Is Still Hard</h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points points--rose stagger">
+    <li><span class="bullet"></span><em>"Which table should I use?"</em> &mdash; a question asked daily</li>
+    <li><span class="bullet"></span><strong>Duplicate models</strong> with no clear ownership</li>
+    <li><span class="bullet"></span><strong>Tribal knowledge</strong> &mdash; context lives in people's heads</li>
+  </ul>
+  <div class="callout callout--rose stagger" style="margin-top:2rem">
+    <span class="icon">&#128173;</span>
+    <span class="text">If your team Slacks each other to find data, your discovery layer is missing</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 14 — USAGE BLINDNESS ═══════════════════ -->
+<section class="slide" data-slide="14">
+  <span class="tag tag--amber stagger">Your Unique Angle</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Usage Blindness</h2>
+  <div class="accent-line stagger"></div>
+  <p class="body body--lg text-muted stagger">We document data... but we don't know:</p>
+  <div class="layers stagger" style="margin-top:1.5rem">
+    <div class="layer" style="border-color:rgba(245,158,11,.2)">
+      <span class="num" style="color:var(--amber)">?</span>
+      <span><strong>Who reads it</strong> &mdash; is anyone consuming this documentation?</span>
+    </div>
+    <div class="layer" style="border-color:rgba(245,158,11,.2)">
+      <span class="num" style="color:var(--amber)">?</span>
+      <span><strong>What is useful</strong> &mdash; which docs actually help people?</span>
+    </div>
+    <div class="layer" style="border-color:rgba(245,158,11,.2)">
+      <span class="num" style="color:var(--amber)">?</span>
+      <span><strong>What is ignored</strong> &mdash; effort wasted on unread descriptions</span>
+    </div>
+  </div>
+  <div class="callout callout--amber stagger" style="margin-top:1.5rem">
+    <span class="icon">&#128165;</span>
+    <span class="text"><strong>No feedback loop.</strong> This is the blind spot most teams don't even know they have.</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 15 — THE REAL PROBLEM ═══════════════════ -->
+<section class="slide" data-slide="15" style="justify-content:center;align-items:center;text-align:center">
+  <div class="lineage-grid"></div>
+  <span class="tag tag--rose stagger">Root Cause</span>
+  <h2 class="display display--xl stagger" style="margin-top:1.5rem;max-width:800px">Metadata is treated as an <span class="text-rose">afterthought</span></h2>
+  <div class="accent-line stagger" style="margin:1.5rem auto"></div>
+  <div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap" class="stagger">
+    <span class="tag tag--rose">Added later</span>
+    <span class="tag tag--rose">Not maintained</span>
+    <span class="tag tag--rose">Not trusted</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 16 — WHAT GOOD LOOKS LIKE ═══════════════════ -->
+<section class="slide" data-slide="16">
+  <span class="tag tag--green stagger">Vision</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">A Strong Metadata Layer</h2>
+  <div class="accent-line stagger"></div>
+  <div class="quad stagger">
+    <div class="quad-item" style="border-color:rgba(34,211,238,.15)">
+      <div class="qi-icon">&#9989;</div>
+      <div class="qi-title text-cyan">Documentation</div>
+      <div class="qi-desc">Reliable, tracked, consistent across all models</div>
+    </div>
+    <div class="quad-item" style="border-color:rgba(16,185,129,.15)">
+      <div class="qi-icon">&#128280;</div>
+      <div class="qi-title text-green">Lineage</div>
+      <div class="qi-desc">Deep column-level visibility and impact analysis</div>
+    </div>
+    <div class="quad-item" style="border-color:rgba(245,158,11,.15)">
+      <div class="qi-icon">&#128269;</div>
+      <div class="qi-title text-amber">Discovery</div>
+      <div class="qi-desc">Easy to find data with attached context</div>
+    </div>
+    <div class="quad-item" style="border-color:rgba(244,63,94,.15)">
+      <div class="qi-icon">&#128200;</div>
+      <div class="qi-title text-rose">Usage</div>
+      <div class="qi-desc">Feedback on what people actually consume</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 17 — DOCUMENTATION SOLUTION ═══════════════════ -->
+<section class="slide" data-slide="17">
+  <span class="tag tag--cyan stagger">Solution #1</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Better Documentation Systems</h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points stagger">
+    <li><span class="bullet"></span><strong>Track changes</strong> &mdash; know when descriptions were last updated and by whom</li>
+    <li><span class="bullet"></span><strong>Maintain consistency</strong> &mdash; inherit definitions so they don't diverge</li>
+    <li><span class="bullet"></span><strong>Reuse definitions</strong> across models &mdash; write once, apply everywhere</li>
+  </ul>
+  <div class="callout stagger" style="margin-top:2rem">
+    <span class="icon">&#128736;</span>
+    <span class="text">Tools like <strong>dbt Doc Tracker</strong> make this possible &mdash; tracking documentation changes, flagging staleness, and keeping your docs honest across your entire dbt project</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 18 — LINEAGE SOLUTION ═══════════════════ -->
+<section class="slide" data-slide="18">
+  <span class="tag tag--green stagger">Solution #2</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Lineage as a Debugging Tool</h2>
+  <div class="accent-line stagger"></div>
+  <div class="flow-diagram stagger">
+    <div class="flow-node flow-node--src">source.col</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-node flow-node--stg">staging.col</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-node flow-node--mart">mart.metric</div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-node" style="border-color:rgba(34,211,238,.3);color:var(--cyan)">&#9989; impact clear</div>
+  </div>
+  <ul class="points points--green stagger" style="margin-top:1.5rem">
+    <li><span class="bullet"></span><strong>Understand impact</strong> before making changes &mdash; not after</li>
+    <li><span class="bullet"></span><strong>Trace issues quickly</strong> through column-level flow</li>
+    <li><span class="bullet"></span><strong>See how data flows</strong> from source to dashboard metric</li>
+  </ul>
+  <div class="callout callout--green stagger" style="margin-top:1.5rem">
+    <span class="icon">&#9733;</span>
+    <span class="text"><strong>dbt Flow Lineage</strong> turns lineage from a static diagram into a live debugging tool &mdash; this is where you move from "seeing" data to <em>understanding</em> it</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 19 — DISCOVERY SOLUTION ═══════════════════ -->
+<section class="slide" data-slide="19">
+  <span class="tag tag--amber stagger">Solution #3</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Make Data Easy to Find</h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points points--amber stagger">
+    <li><span class="bullet"></span><strong>Context attached</strong> to datasets &mdash; descriptions, owners, freshness</li>
+    <li><span class="bullet"></span><strong>Clear definitions</strong> &mdash; no more guessing what <code class="mono text-amber">col_1</code> means</li>
+    <li><span class="bullet"></span><strong>Reduced duplication</strong> &mdash; one canonical source, not five variations</li>
+  </ul>
+  <div class="callout callout--amber stagger" style="margin-top:2rem">
+    <span class="icon">&#10148;</span>
+    <span class="text">Good discovery is a byproduct of good documentation and lineage working together</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 20 — USAGE FEEDBACK ═══════════════════ -->
+<section class="slide" data-slide="20">
+  <span class="tag tag--amber stagger">Advanced Insight</span>
+  <h2 class="display display--lg stagger" style="margin-top:1rem">Close the Loop</h2>
+  <div class="accent-line stagger"></div>
+  <ul class="points points--amber stagger">
+    <li><span class="bullet"></span><strong>Track documentation consumption</strong> &mdash; who reads what?</li>
+    <li><span class="bullet"></span><strong>Improve what people actually use</strong> &mdash; double down on value</li>
+    <li><span class="bullet"></span><strong>Remove what doesn't matter</strong> &mdash; reduce noise</li>
+  </ul>
+  <div class="callout callout--green stagger" style="margin-top:2rem">
+    <span class="icon">&#128161;</span>
+    <span class="text">This is where metadata <strong>evolves</strong> &mdash; from static context into an adaptive layer that improves based on real usage signals</span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 21 — BIG SHIFT ═══════════════════ -->
+<section class="slide" data-slide="21" style="justify-content:center;align-items:center;text-align:center">
+  <div class="lineage-grid"></div>
+  <p class="mono mono--sm text-dim stagger" style="letter-spacing:.12em;margin-bottom:1.5rem">The Big Shift</p>
+  <h2 class="display display--lg stagger" style="max-width:750px">We've optimized how data <span class="text-green">flows</span>...</h2>
+  <h2 class="display display--lg stagger" style="max-width:750px;margin-top:1rem">We haven't optimized how data is <span class="text-amber">understood</span></h2>
+</section>
+
+<!-- ═══════════════════ SLIDE 22 — FINAL THOUGHT ═══════════════════ -->
+<section class="slide" data-slide="22" style="justify-content:center;align-items:center;text-align:center">
+  <div class="lineage-grid"></div>
+  <h2 class="display display--lg stagger" style="max-width:800px;color:var(--muted)">A modern data stack without metadata</h2>
+  <h2 class="display display--lg stagger" style="max-width:800px;margin-top:.8rem">is just a collection of pipelines<br/><span class="text-rose">no one fully understands</span></h2>
+</section>
+
+<!-- ═══════════════════ SLIDE 23 — CALL TO ACTION ═══════════════════ -->
+<section class="slide" data-slide="23" style="justify-content:center;align-items:center;text-align:center">
+  <div class="lineage-grid"></div>
+  <span class="tag tag--cyan stagger">Call to Action</span>
+  <h2 class="display display--xl stagger" style="margin-top:1.5rem;max-width:700px">Start treating metadata as <span style="background:linear-gradient(135deg,var(--cyan),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">infrastructure</span></h2>
+  <div class="accent-line stagger" style="margin:1.5rem auto"></div>
+  <div style="display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap" class="stagger">
+    <span class="tag tag--green">Not optional</span>
+    <span class="tag tag--green">Not later</span>
+    <span class="tag tag--green">Not "nice to have"</span>
+  </div>
+  <div class="callout callout--green stagger" style="margin-top:2rem;max-width:500px">
+    <span class="icon">&#10148;</span>
+    <span class="text">It's <strong>foundational</strong></span>
+  </div>
+</section>
+
+<!-- ═══════════════════ SLIDE 24 — THANK YOU ═══════════════════ -->
+<section class="slide thankyou" data-slide="24">
+  <div class="lineage-grid"></div>
+  <p class="big-num stagger">Thank You</p>
+  <div class="accent-line stagger" style="margin:1.5rem auto"></div>
+  <p class="body body--lg text-muted stagger">Let's connect &mdash; Questions?</p>
+  <p class="mono mono--sm stagger" style="margin-top:2rem;color:var(--dim)">Ayoade Adegbite</p>
+  <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap" class="stagger">
+    <span class="tag tag--cyan">dbt Flow Lineage</span>
+    <span class="tag tag--amber">dbt Doc Tracker</span>
+  </div>
+</section>
+
+</div><!-- /deck -->
+
+<script>
+(function(){
+  const slides=document.querySelectorAll('.slide');
+  const total=slides.length;
+  const progress=document.getElementById('progress');
+  const cCurrent=document.getElementById('cCurrent');
+  const cTotal=document.getElementById('cTotal');
+  const navHint=document.getElementById('navHint');
+  const fsBtn=document.getElementById('fsBtn');
+  let current=0;
+  let hintTimer;
+
+  cTotal.textContent=String(total).padStart(2,'0');
+
+  function go(n){
+    if(n<0||n>=total)return;
+    slides[current].classList.remove('active');
+    if(n>current)slides[current].classList.add('prev');
+    slides.forEach(s=>{s.classList.remove('prev')});
+    current=n;
+    slides[current].classList.add('active');
+    progress.style.width=((current+1)/total*100)+'%';
+    cCurrent.textContent=String(current+1).padStart(2,'0');
+    /* reset stagger animations */
+    slides[current].querySelectorAll('.stagger').forEach(el=>{
+      el.style.animation='none';
+      el.offsetHeight;
+      el.style.animation='';
+    });
+  }
+
+  function next(){go(current+1)}
+  function prev(){go(current-1)}
+
+  go(0);
+
+  /* show hint briefly */
+  navHint.classList.add('show');
+  hintTimer=setTimeout(()=>navHint.classList.remove('show'),4000);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();next()}
+    else if(e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();prev()}
+    else if(e.key==='Home'){e.preventDefault();go(0)}
+    else if(e.key==='End'){e.preventDefault();go(total-1)}
+    else if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+      else document.exitFullscreen();
+    }
+    clearTimeout(hintTimer);navHint.classList.remove('show');
+  });
+
+  /* swipe support */
+  let tx=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){dx<0?next():prev()}
+  });
+
+  /* click zones */
+  document.addEventListener('click',e=>{
+    const x=e.clientX/window.innerWidth;
+    if(x>.65)next();else if(x<.35)prev();
+  });
+
+  /* fullscreen button */
+  fsBtn.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen();
+  });
+})();
+</script>
+</body>
+</html>
