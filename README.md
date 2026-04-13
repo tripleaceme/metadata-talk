@@ -1,6 +1,6 @@
 # Metadata: The Missing Layer in Your Stack
 
-> A conference talk on why metadata — not pipelines or transformations — is the layer that makes modern data stacks actually usable.
+> A conference talk on why metadata, not pipelines or transformations is the layer that makes modern data stacks actually usable.
 
 [![Talk Status](https://img.shields.io/badge/talk-delivered-22d3ee?style=flat-square)](https://github.com/tripleaceme/metadata-talk)
 [![Series](https://img.shields.io/badge/series-Demystifying%20Data%20Engineering-f59e0b?style=flat-square)](#)
