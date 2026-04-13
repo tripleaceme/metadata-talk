@@ -30,7 +30,7 @@ This isn't a data problem, it's a **metadata problem**.
 - The four pillars of a healthy metadata layer: **documentation**, **lineage**, **discovery**, and **usage**
 - How **column-level lineage** changes debugging and impact analysis (live demo of [`dbt-flow-lineage`](https://marketplace.visualstudio.com/items?itemName=tripleaceme.dbt-flow-lineage))
 - Why **documentation tracking** matters more than documentation itself (intro to [`dbt-doc-tracker`](https://hub.getdbt.com/tripleaceme/dbt_doc_tracker/latest) and [`dbt-doc-inherit`](https://hub.getdbt.com/tripleaceme/dbt_doc_inherit/latest))
-- The often-ignored fourth pillar: **usage feedback** — closing the loop between docs and consumers
+- The often-ignored fourth pillar: **usage feedback**, closing the loop between docs and consumers
 - A practical framework for treating metadata as **infrastructure**, not "nice to have"
 
 ### Where it was delivered
@@ -55,24 +55,7 @@ A short clip from the recording is available at [`webinar/live-recording-clip.mp
 
 The presentation lives in [`index.html`](./index.html) — a self-contained, dependency-free HTML deck with keyboard navigation, swipe support, and a custom dark editorial theme built around a cyan-to-amber gradient system (cold raw data → warm understood data, mirroring the talk's thesis).
 
-### Run it locally
 
-No build step required. Open the file directly:
-
-```bash
-open index.html
-# or just double-click it
-```
-
-### Navigate
-
-| Action            | Keys                                            |
-| ----------------- | ----------------------------------------------- |
-| Next slide        | `→` &middot; `Space` &middot; `Enter` &middot; click right third |
-| Previous slide    | `←` &middot; `Backspace` &middot; click left third |
-| First / last      | `Home` &middot; `End`                            |
-| Fullscreen toggle | `F`                                             |
-| Touch             | Swipe left / right                              |
 
 ### Slide structure (27 slides)
 
@@ -97,7 +80,7 @@ open index.html
 | 17 | Usage blindness — the fourth pillar              |
 | 18 | The real problem                                 |
 | 19 | What good looks like                             |
-| 20 | Documentation as a system (`dbt-doc-tracker`)    |
+| 20 | Documentation as a system (`dbt-doc-tracker` and `dbt-doc-inherit`)    |
 | 21 | Lineage as a debugging tool                      |
 | 22 | Discovery (solution)                             |
 | 23 | Usage feedback (advanced insight)                |
@@ -132,30 +115,12 @@ open index.html
 - Portfolio - [Ayoade Adegbite](https://ayoadeabel.tech/)
 - Speaking — [sessionize.com/ayoade](https://sessionize.com/ayoade)
 
----
-
-## Repository Contents
-
-```
-metadata-talk/
-├── index.html                        # The slide deck (open in any browser)
-├── README.md                         # You are here
-├── Ayoade.jpg                        # Speaker photo (slide 2)
-├── behindthedatanews_logo.jpeg       # Newsletter logo (slide 3)
-├── demo-obt-lineage.jpeg             # dbt Flow Lineage screenshot (reference)
-├── dbt-flow-lineagepreview.mp4       # dbt Flow Lineage demo video (slide 15)
-├── Metadata.jpeg                     # Promotional graphic
-└── webinar/
-    ├── title-slide-live.png          # Title slide displayed during the webinar
-    ├── live-presentation.jpg         # dbt Flow Lineage demo on screen during the talk
-    └── live-recording-clip.mp4       # Short clip from the live recording
-```
 
 ---
 
 ## Want this talk at your event?
 
-I speak at conferences, meetups, and internal team events on metadata, analytics engineering, and building trustworthy data systems. Reach out via [LinkedIn](https://linkedin.com/in/tripleaceme) or book through [Portfolio](https://ayoadeabel.tech/).
+I speak at conferences, meetups, and internal team events on metadata, analytics engineering, and building trustworthy data systems. Reach out via [LinkedIn](https://linkedin.com/in/tripleaceme) or book through [website](https://ayoadeabel.tech/).
 
 ---
 
