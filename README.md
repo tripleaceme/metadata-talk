@@ -28,8 +28,8 @@ This isn't a data problem, it's a **metadata problem**.
 
 - Why metadata is the **interface between humans and data**
 - The four pillars of a healthy metadata layer: **documentation**, **lineage**, **discovery**, and **usage**
-- How **column-level lineage** changes debugging and impact analysis (live demo of `[dbt-flow-lineage](https://marketplace.visualstudio.com/items?itemName=tripleaceme.dbt-flow-lineage)`)
-- Why **documentation tracking** matters more than documentation itself (intro to `[dbt-doc-tracker](https://hub.getdbt.com/tripleaceme/dbt_doc_tracker/latest) and [dbt-doc-inherit](https://hub.getdbt.com/tripleaceme/dbt_doc_inherit/latest)`)
+- How **column-level lineage** changes debugging and impact analysis (live demo of [`dbt-flow-lineage`](https://marketplace.visualstudio.com/items?itemName=tripleaceme.dbt-flow-lineage))
+- Why **documentation tracking** matters more than documentation itself (intro to [`dbt-doc-tracker`](https://hub.getdbt.com/tripleaceme/dbt_doc_tracker/latest) and [`dbt-doc-inherit`](https://hub.getdbt.com/tripleaceme/dbt_doc_inherit/latest))
 - The often-ignored fourth pillar: **usage feedback** — closing the loop between docs and consumers
 - A practical framework for treating metadata as **infrastructure**, not "nice to have"
 
