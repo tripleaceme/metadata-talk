@@ -18,24 +18,24 @@
 
 **But nobody fully understands the data.**
 
-This talk argues that the modern data stack has a missing third layer — and we've been ignoring it. We've optimized infrastructure (warehouses, pipelines) and transformation (dbt, SQL), but we've treated **metadata** as an afterthought.
+This talk argues that the modern data stack has a missing third layer, and we've been ignoring it. We've optimized infrastructure (warehouses, pipelines) and transformation (dbt, SQL), but we've treated **metadata** as an afterthought.
 
 The result? Tables with no descriptions. Columns named `value_flag` and `col_1`. Tribal knowledge living in Slack threads. Documentation that nobody trusts. Lineage diagrams that show *connections* but not *transformations*.
 
-This isn't a data problem — it's a **metadata problem**.
+This isn't a data problem, it's a **metadata problem**.
 
 ### What you'll learn
 
 - Why metadata is the **interface between humans and data**
 - The four pillars of a healthy metadata layer: **documentation**, **lineage**, **discovery**, and **usage**
-- How **column-level lineage** changes debugging and impact analysis (live demo of `dbt-flow-lineage`)
-- Why **documentation tracking** matters more than documentation itself (intro to `dbt-doc-tracker`)
+- How **column-level lineage** changes debugging and impact analysis (live demo of `[dbt-flow-lineage](https://marketplace.visualstudio.com/items?itemName=tripleaceme.dbt-flow-lineage)`)
+- Why **documentation tracking** matters more than documentation itself (intro to `[dbt-doc-tracker](https://hub.getdbt.com/tripleaceme/dbt_doc_tracker/latest) and [dbt-doc-inherit](https://hub.getdbt.com/tripleaceme/dbt_doc_inherit/latest)`)
 - The often-ignored fourth pillar: **usage feedback** — closing the loop between docs and consumers
 - A practical framework for treating metadata as **infrastructure**, not "nice to have"
 
 ### Where it was delivered
 
-Part of the **Demystifying Data Engineering Series** — a community event for analytics engineers, data engineers, and platform teams.
+Part of the **Demystifying Data Engineering Series**, a community event for analytics engineers, data engineers, and platform teams.
 
 ---
 
@@ -62,13 +62,6 @@ No build step required. Open the file directly:
 ```bash
 open index.html
 # or just double-click it
-```
-
-For a sharper experience, serve it through any static server:
-
-```bash
-python3 -m http.server 8000
-# then visit http://localhost:8000
 ```
 
 ### Navigate
@@ -119,19 +112,17 @@ python3 -m http.server 8000
 
 | Tool                                                 | What it does                                                  |
 | ---------------------------------------------------- | ------------------------------------------------------------- |
-| **[dbt Flow Lineage](https://github.com/tripleaceme)** | VS Code / browser extension for column-level dbt lineage with impact analysis |
-| **[dbt Doc Tracker](https://github.com/tripleaceme)**  | Tracks documentation changes across dbt projects — flags stale, inconsistent, or undocumented models |
+| **[dbt Flow Lineage](https://marketplace.visualstudio.com/items?itemName=tripleaceme.dbt-flow-lineage)** | VS Code / browser extension for column-level dbt lineage with impact analysis |
+| **[dbt Doc Tracker](https://hub.getdbt.com/tripleaceme/dbt_doc_tracker/latest)**  | Tracks documentation changes across dbt projects: flags stale, inconsistent, or undocumented models |
+| **[dbt Doc Inherit](https://hub.getdbt.com/tripleaceme/dbt_doc_inherit/latest)**  | Simplify documentation consistencies across models and dbt-mesh projects |
 
 ---
 
 ## Speaker
 
-**Ayoade Adegbite** — Senior Analytics Engineer, international speaker, open-source contributor, founder of [Behind The Data](https://behindthedata.substack.com).
+[**Ayoade Adegbite**](https://ayoadeabel.tech/) — Senior Analytics Engineer, international speaker, open-source contributor, founder of [Behind The Data Newsletter](https://behindthedata.substack.com),
+[BI Analytics Africa](http://bianalytics.africa/).
 
-- 8+ conference talks across 6+ countries
-- 900+ students trained in analytics engineering
-- Organizer, **dbt Lagos** community
-- Stack: dbt &middot; Snowflake &middot; BigQuery &middot; Airflow &middot; Python
 
 ### Connect
 
@@ -139,6 +130,7 @@ python3 -m http.server 8000
 - GitHub — [github.com/tripleaceme](https://github.com/tripleaceme)
 - Twitter / X — [@abel_analytics](https://twitter.com/abel_analytics)
 - Newsletter — [behindthedata.substack.com](https://behindthedata.substack.com)
+- Portfolio - [Ayoade Adegbite](https://ayoadeabel.tech/)
 - Speaking — [sessionize.com/ayoade](https://sessionize.com/ayoade)
 
 ---
@@ -164,7 +156,7 @@ metadata-talk/
 
 ## Want this talk at your event?
 
-I speak at conferences, meetups, and internal team events on metadata, analytics engineering, and building trustworthy data systems. Reach out via [LinkedIn](https://linkedin.com/in/tripleaceme) or book through [Sessionize](https://sessionize.com/ayoade).
+I speak at conferences, meetups, and internal team events on metadata, analytics engineering, and building trustworthy data systems. Reach out via [LinkedIn](https://linkedin.com/in/tripleaceme) or book through [Portfolio](https://ayoadeabel.tech/).
 
 ---
 
