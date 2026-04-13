@@ -120,8 +120,7 @@ open index.html
 
 ## Speaker
 
-[**Ayoade Adegbite**](https://ayoadeabel.tech/) — Senior Analytics Engineer, international speaker, open-source contributor, founder of [Behind The Data Newsletter](https://behindthedata.substack.com),
-[BI Analytics Africa](http://bianalytics.africa/).
+**Ayoade Adegbite** — Senior Analytics Engineer, international speaker, open-source contributor, founder of [Behind The Data Newsletter](https://behindthedata.substack.com) and [BI Analytics Africa](http://bianalytics.africa/) - Dashboards for African SMBs.
 
 
 ### Connect
